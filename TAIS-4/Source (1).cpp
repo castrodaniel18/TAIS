@@ -13,15 +13,15 @@ using namespace std;
 
 /*@ <answer>
 
- Escribe aquí un comentario general sobre la solución, explicando cómo
- se resuelve el problema y cuál es el coste de la solución, en función
- del tamaño del problema.
+ Escribe aquï¿½ un comentario general sobre la soluciï¿½n, explicando cï¿½mo
+ se resuelve el problema y cuï¿½l es el coste de la soluciï¿½n, en funciï¿½n
+ del tamaï¿½o del problema.
 
  @ </answer> */
 
 
  // ================================================================
- // Escribe el código completo de tu solución aquí debajo
+ // Escribe el cï¿½digo completo de tu soluciï¿½n aquï¿½ debajo
  // ================================================================
  //@ <answer>
 
@@ -54,7 +54,7 @@ bool resuelveCaso() {
         case 'I':
         {
             cin >> nombre >> gravedad;
-            cola.push({ nombre, nombre, gravedad });
+            cola.push({ gravedad, nombre });
         }
         break;
         case 'A':
@@ -72,7 +72,7 @@ bool resuelveCaso() {
 }
 
 //@ </answer>
-//  Lo que se escriba dejado de esta línea ya no forma parte de la solución.
+//  Lo que se escriba dejado de esta lï¿½nea ya no forma parte de la soluciï¿½n.
 
 int main() {
     // ajustes para que cin extraiga directamente de un fichero
