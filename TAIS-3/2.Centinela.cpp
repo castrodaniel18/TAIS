@@ -14,15 +14,15 @@ using namespace std;
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
 void resolver(PriorityQueue<long long int, less<long long int>>& v, vector<long long int>& total) {
-    if (v.size() > 1) {
-        long long int coste = v.top();
-        v.pop();
-        coste += v.top();
-        v.pop();
-        v.push(coste);
-        total.push_back(coste);
-        resolver(v, total);
-    }
+   if (v.size() > 1) {
+      long long int coste = v.top();
+      v.pop();
+      coste += v.top();
+      v.pop();
+      v.push(coste);
+      total.push_back(coste);
+      resolver(v, total);
+   }
 }
 
 // resuelve un caso de prueba, leyendo de la entrada la
@@ -30,21 +30,21 @@ void resolver(PriorityQueue<long long int, less<long long int>>& v, vector<long 
 bool resuelveCaso() {
    
    // leer los datos de la entrada
-    long long int n, elem, sol = 0;
+   long long int n, elem, sol = 0;
    cin >> n;
    if (n == 0)
-       return false;
+      return false;
    //if (n == 1) return n;
    PriorityQueue<long long int, less<long long int>> v;
    vector<long long int> total;
    for (int i = 0; i < n; i++) {
-       cin >> elem;
-       v.push(elem);
+      cin >> elem;
+      v.push(elem);
    }
    resolver(v, total);
    while(!total.empty()) {
-       sol += total.back();
-       total.pop_back();
+      sol += total.back();
+      total.pop_back();
    }
    // escribir sol
    cout << sol << endl;
