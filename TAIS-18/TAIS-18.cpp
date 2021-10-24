@@ -12,7 +12,31 @@ using namespace std;
 
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
+class Sumidero{
+public:
+    Sumidero(const vector<vector<int>>& grafo, int v): sumidero(-1), V(v){
+        sumidero = 0;
+        for(int i = 1; i < V; i++){
+            if(hayArista(sumidero, i, grafo)) 
+                sumidero = i;
+        }
+        int j = 0;
+        while(sumidero != -1 && j < V){
+            if(hayArista(sumidero, j, grafo)) 
+                sumidero = -1;
+        }   
+    }
 
+    int const solucion(){ return sumidero;}
+
+private:
+    int sumidero;
+    int V;
+
+    bool hayArista(int a, int b, const vector<vector<int>>& grafo){
+        return grafo[a][b] == 1;
+    }
+};
 
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
@@ -23,17 +47,20 @@ bool resuelveCaso() {
     if (!std::cin)  // fin de la entrada
     return false;
 
-    vector<vector<int>> grafo(V * V + 1);
-
+    vector<vector<int>> grafo(V * V);
     cin >> A;
-    for(int i = 0; i < A; i++){
+    cin >> v >> w;
+    for(int i = 1; i < A; i++){
         cin >> v >> w;
-        grafo[v][w] = 1;
     }
 
-    //Solucion sol = resolver(datos);
+    Sumidero sumidero(grafo, V);
+    int sol = sumidero.solucion();
 
 // escribir sol
+
+    if(sol != -1) cout << "SI " << sol << "\n";
+    else cout << "NO" << "\n";
 
     return true;
 }
