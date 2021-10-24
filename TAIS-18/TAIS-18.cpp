@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "Digrafo.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ using namespace std;
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Sumidero{
 public:
+<<<<<<< HEAD
     Sumidero(const vector<vector<int>>& grafo, int v): sumidero(-1), V(v){
         sumidero = 0;
         for(int i = 1; i < V; i++){
@@ -36,17 +38,36 @@ private:
     bool hayArista(int a, int b, const vector<vector<int>>& grafo){
         return grafo[a][b] == 1;
     }
+=======
+    Sumidero(Digrafo const & grafo): sumidero(-1){
+        sumidero = 0;
+        for(int i = 1; i < grafo.V(); i++){
+            if(grafo.hayArista(sumidero, i))
+                sumidero = i;
+        }
+        for(int i = 0; i < grafo.V() && sumidero != -1; i++){
+            if(i != sumidero && (grafo.hayArista(sumidero, i) || !grafo.hayArista(i, sumidero)))
+                sumidero = -1;
+        }
+    }
+
+    int haySumidero(){ return sumidero; }
+private:
+    int sumidero;
+
+>>>>>>> 02f30f3b977642f51279495cdedec820c45b3136
 };
 
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-    int V, A, v, w;
     // leer los datos de la entrada
-    cin >> V;
+    Digrafo grafo(cin);
+
     if (!std::cin)  // fin de la entrada
     return false;
 
+<<<<<<< HEAD
     vector<vector<int>> grafo(V * V);
     cin >> A;
     cin >> v >> w;
@@ -56,6 +77,13 @@ bool resuelveCaso() {
 
     Sumidero sumidero(grafo, V);
     int sol = sumidero.solucion();
+=======
+    Sumidero sumidero(grafo);
+
+    int sol = sumidero.haySumidero();
+    if(sol != -1) cout << "SI " << sol << "\n";
+    else cout << "NO" << "\n";
+>>>>>>> 02f30f3b977642f51279495cdedec820c45b3136
 
 // escribir sol
 
