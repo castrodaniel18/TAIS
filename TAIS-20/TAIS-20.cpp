@@ -14,7 +14,7 @@ using namespace std;
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Petroleo{
 public:
-    Petroleo(vector<string>const &mapa):F(mapa.size()), C(mapa[0].size()), conjunto(F*C){
+    Petroleo(vector<string>const &mapa):F(mapa.size()), C(mapa[0].size()), conjunto(F*C), max(0){
         for(int i = 0; i < F; i++) {
             for(int j = 0; j < C; j++){
                 if(mapa[i][j] == '#'){
@@ -34,6 +34,8 @@ public:
                         conjunto.unir((i + 1)* F + (j - 1), i * F + j);
                     if(dentro(i + 1, j + 1) && mapa[i + 1][j + 1] == '#')//ABAJO DERECHA
                         conjunto.unir((i + 1)* F + (j + 1), i * F + j);
+
+                    if(conjunto.cardinal(i *F + C) > max) max = conjunto.cardinal(i *F + C);
                 }
             }
         }
@@ -56,10 +58,12 @@ public:
             conjunto.unir((i + 1)* F + (j - 1), i * F + j);
         if(dentro(i + 1, j + 1) && mapa[i + 1][j + 1] == '#')//ABAJO DERECHA
             conjunto.unir((i + 1)* F + (j + 1), i * F + j);
+        
+        if(conjunto.cardinal(i *F + C) > max) max = conjunto.cardinal(i *F + C);
     }
 
 private:
-    int C, F;
+    int C, F, max;
     ConjuntosDisjuntos conjunto;
 
     bool dentro(int i, int j){
@@ -81,6 +85,8 @@ bool resuelveCaso() {
     Petroleo petroleo(mapa);
     cin >> manchas;
     for (int i = 0; i < manchas; i++){
+        F--;
+        C--;
         cin >> F >> C;
         mapa[F][C] = '#';
         petroleo.añadir_mancha(mapa, F, C);
