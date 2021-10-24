@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "ConjuntosDisjuntos.h"  // propios o los de las estructuras de datos de clase
 
@@ -14,14 +15,14 @@ using namespace std;
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Petroleo{
 public:
-    Petroleo(vector<string>const &mapa):F(mapa.size()), C(mapa[0].size()), conjunto(F*C), max(0){
+    Petroleo(vector<string>const &mapa, int f, int c):F(f), C(c), max(0), conjunto(F*C){
         for(int i = 0; i < F; i++) {
             for(int j = 0; j < C; j++){
                 if(mapa[i][j] == '#'){
                     if(dentro(i - 1, j) && mapa[i - 1][j] == '#')//ARRIBA
                         conjunto.unir((i - 1) * F + j, i * F + j);
                     if(dentro(i + 1, j) && mapa[i + 1][j] == '#')//ABAJO
-                        conjunto.unir((i +1 ) * F + j, i * F + j);
+                        conjunto.unir((i + 1) * F + j, i * F + j);
                     if(dentro(i, j - 1) && mapa[i][j - 1] == '#')//IZQUIERDA
                         conjunto.unir(i * F + (j - 1), i * F + j);
                     if(dentro(i, j + 1) && mapa[i][j + 1] == '#')//DERECHA
@@ -35,17 +36,17 @@ public:
                     if(dentro(i + 1, j + 1) && mapa[i + 1][j + 1] == '#')//ABAJO DERECHA
                         conjunto.unir((i + 1)* F + (j + 1), i * F + j);
 
-                    if(conjunto.cardinal(i *F + C) > max) max = conjunto.cardinal(i *F + C);
+                    if (conjunto.cardinal(i * F + j) > max) max = conjunto.cardinal(i * F + j);
                 }
             }
         }
     }
 
-    void añadir_mancha(vector<string> const &mapa, int i, int j){
+    void anadir_mancha(vector<string> const &mapa, int i, int j){
         if(dentro(i - 1, j) && mapa[i - 1][j] == '#')//ARRIBA
             conjunto.unir((i - 1) * F + j, i * F + j);
         if(dentro(i + 1, j) && mapa[i + 1][j] == '#')//ABAJO
-            conjunto.unir((i +1 ) * F + j, i * F + j);
+            conjunto.unir((i + 1) * F + j, i * F + j);
         if(dentro(i, j - 1) && mapa[i][j - 1] == '#')//IZQUIERDA
             conjunto.unir(i * F + (j - 1), i * F + j);
         if(dentro(i, j + 1) && mapa[i][j + 1] == '#')//DERECHA
@@ -58,9 +59,11 @@ public:
             conjunto.unir((i + 1)* F + (j - 1), i * F + j);
         if(dentro(i + 1, j + 1) && mapa[i + 1][j + 1] == '#')//ABAJO DERECHA
             conjunto.unir((i + 1)* F + (j + 1), i * F + j);
-        
-        if(conjunto.cardinal(i *F + C) > max) max = conjunto.cardinal(i *F + C);
+
+        if (conjunto.cardinal(i * F + j) > max) max = conjunto.cardinal(i * F + j);
     }
+
+    int solucion(vector<string> const& mapa) { return max; }
 
 private:
     int C, F, max;
@@ -75,26 +78,29 @@ private:
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
     int F, C, manchas;
-    cin >> F >> C; // número de filas y columnas
-    if (!cin) return false;
-    vector<string> mapa(F);
-    // leemos la imagen
-    for (string & linea : mapa)
-        cin >> linea;
+    cin >> F >> C;
 
-    Petroleo petroleo(mapa);
+    if (!cin) return false;
+
+    vector<string> mapa(F);
+
+    cin.ignore();
+    for (string& linea : mapa)
+        getline(cin, linea);
+
+    Petroleo petroleo(mapa, F, C);
+    cout << petroleo.solucion(mapa) << " ";
     cin >> manchas;
     for (int i = 0; i < manchas; i++){
+        cin >> F >> C;
         F--;
         C--;
-        cin >> F >> C;
         mapa[F][C] = '#';
-        petroleo.añadir_mancha(mapa, F, C);
+        petroleo.anadir_mancha(mapa, F, C);
+        cout << petroleo.solucion(mapa) << " ";
     }
-    //Solucion sol = resolver(datos);
-    
-   // escribir sol
-    
+    cout << "\n";
+
     return true;
 }
 
