@@ -15,8 +15,8 @@ using namespace std;
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Islas{
 public:
-    Islas(GrafoValorado<int> const &grafo):conexo(false), conectados(1), visitados(grafo.V(), false){
-        dfs(grafo, 1);
+    Islas(GrafoValorado<int> const &grafo):conectados(0), visitados(grafo.V(), false){
+        dfs(grafo, 0);
     }
 
     int calcula_puentes(GrafoValorado<int> const &grafo){
@@ -24,21 +24,19 @@ public:
         return arm.costeARM();
     }
 
-    bool es_conexo(){ return conexo; }
+    bool es_conexo(int V){ return conectados == V; }
 
 private:
-    bool conexo;
     int conectados;
     vector<bool> visitados;
 
     void dfs(GrafoValorado<int> const &grafo, int v){
         visitados[v] = true;
+        conectados++;
         for(auto arista: grafo.ady(v)){
             int w = arista.otro(v);
-            if(!conexo && !visitados[w]){
-                conectados++;
-                if(conectados == grafo.V() - 1) conexo = true;
-                else dfs(grafo, w);
+            if(!visitados[w]){
+                dfs(grafo, w);
             }
         }
     }
@@ -47,15 +45,23 @@ private:
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-   // leer los datos de la entrada
-   GrafoValorado<int> grafo(cin);
-   if (!std::cin)  // fin de la entrada
-      return false;
+    int V, A, v, w, k;
+    // leer los datos de la entrada
+    cin >> V >> A;
+
+    if (!std::cin)  // fin de la entrada
+        return false;
+
+    GrafoValorado<int> grafo(V);    
+    for(int i = 0; i < A; i++){
+        cin >> v >> w >> k;
+        grafo.ponArista({v - 1, w - 1, k});
+    }
 
     Islas islas(grafo);
 
     // escribir sol
-    if(islas.es_conexo()) cout << islas.calcula_puentes(grafo) << "\n";
+    if(islas.es_conexo(grafo.V())) cout << islas.calcula_puentes(grafo) << "\n";
     else cout << "No hay puentes suficientes\n";
 
     return true;
