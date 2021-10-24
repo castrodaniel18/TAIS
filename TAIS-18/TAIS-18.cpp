@@ -15,30 +15,6 @@ using namespace std;
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Sumidero{
 public:
-<<<<<<< HEAD
-    Sumidero(const vector<vector<int>>& grafo, int v): sumidero(-1), V(v){
-        sumidero = 0;
-        for(int i = 1; i < V; i++){
-            if(hayArista(sumidero, i, grafo)) 
-                sumidero = i;
-        }
-        int j = 0;
-        while(sumidero != -1 && j < V){
-            if(hayArista(sumidero, j, grafo)) 
-                sumidero = -1;
-        }   
-    }
-
-    int const solucion(){ return sumidero;}
-
-private:
-    int sumidero;
-    int V;
-
-    bool hayArista(int a, int b, const vector<vector<int>>& grafo){
-        return grafo[a][b] == 1;
-    }
-=======
     Sumidero(Digrafo const & grafo): sumidero(-1){
         sumidero = 0;
         for(int i = 1; i < grafo.V(); i++){
@@ -55,7 +31,6 @@ private:
 private:
     int sumidero;
 
->>>>>>> 02f30f3b977642f51279495cdedec820c45b3136
 };
 
 // resuelve un caso de prueba, leyendo de la entrada la
@@ -67,23 +42,11 @@ bool resuelveCaso() {
     if (!std::cin)  // fin de la entrada
     return false;
 
-<<<<<<< HEAD
-    vector<vector<int>> grafo(V * V);
-    cin >> A;
-    cin >> v >> w;
-    for(int i = 1; i < A; i++){
-        cin >> v >> w;
-    }
-
-    Sumidero sumidero(grafo, V);
-    int sol = sumidero.solucion();
-=======
     Sumidero sumidero(grafo);
 
     int sol = sumidero.haySumidero();
     if(sol != -1) cout << "SI " << sol << "\n";
     else cout << "NO" << "\n";
->>>>>>> 02f30f3b977642f51279495cdedec820c45b3136
 
 // escribir sol
 
