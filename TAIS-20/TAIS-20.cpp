@@ -6,26 +6,70 @@
 
 #include <iostream>
 #include <fstream>
-#include <...>
 
-#include "..."  // propios o los de las estructuras de datos de clase
+#include "ConjuntosDisjuntos.h"  // propios o los de las estructuras de datos de clase
 
+using namespace std;
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
-Solucion resolver(Datos datos) {
-    ...
-}
+class Petroleo{
+public:
+    Petroleo(vector<string>const &mapa):F(mapa.size()), C(mapa[0].size()), conjunto(F*C){
+        for(int i = 0; i < F; i++) {
+            for(int j = 0; j < C; j++){
+                if(mapa[i][j] == '#'){
+                    if(dentro(i - 1, j) && mapa[i - 1][j] == '#')
+                        conjunto.unir((i - 1) * F + j, i * F + j);
+                    else if(dentro(i + 1, j) && mapa[i + 1][j] == '#')
+                        conjunto.unir((i +1 ) * F + j, i * F + j);
+                    else if(dentro(i, j - 1) && mapa[i][j - 1] == '#')
+                        conjunto.unir(i * F + (j - 1), i * F + j);
+                    else if(dentro(i, j + 1) && mapa[i][j + 1] == '#')
+                        conjunto.unir(i * F + (j + 1), i * F + j);
+                }
+            }
+        }
+    }
+
+    void añadir_mancha(vector<string> const &mapa, int i, int j){
+        if(dentro(i - 1, j) && mapa[i - 1][j] == '#')
+            conjunto.unir((i - 1) * F + j, i * F + j);
+        else if(dentro(i + 1, j) && mapa[i + 1][j] == '#')
+            conjunto.unir((i +1 ) * F + j, i * F + j);
+        else if(dentro(i, j - 1) && mapa[i][j - 1] == '#')
+            conjunto.unir(i * F + (j - 1), i * F + j);
+        else if(dentro(i, j + 1) && mapa[i][j + 1] == '#')
+            conjunto.unir(i * F + (j + 1), i * F + j);
+    }
+
+private:
+    int C, F;
+    ConjuntosDisjuntos conjunto;
+
+    bool dentro(int i, int j){
+        return 0 <= i && i < F && 0 <= j && j < C;
+    }
+};
 
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-    
-   // leer los datos de la entrada
-    
-    if (!std::cin)  // fin de la entrada
-        return false;
-    
-    Solucion sol = resolver(datos);
+    int F, C, manchas;
+    cin >> F >> C; // número de filas y columnas
+    if (!cin) return false;
+    vector<string> mapa(F);
+    // leemos la imagen
+    for (string & linea : mapa)
+        cin >> linea;
+
+    Petroleo petroleo(mapa);
+    cin >> manchas;
+    for (int i = 0; i < manchas; i++){
+        cin >> F >> C;
+        mapa[F][C] = '#';
+        petroleo.añadir_mancha(mapa, F, C);
+    }
+    //Solucion sol = resolver(datos);
     
    // escribir sol
     
