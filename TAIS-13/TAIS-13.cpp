@@ -12,21 +12,24 @@
 
 using namespace std;
 
+enum Color{blanco, negro, sin_color};
+
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Guardias{
 public:
-   Guardias(Grafo const& grafo): visitados(grafo.V(), false), colocados(grafo.V(), false), distancias(grafo.V(), -1), pelean(false), min(-1), V(grafo.V()){}
+   Guardias(Grafo const& grafo): guardias(grafo.V(), sin_color), visitados(grafo.V(), false), pelean(false), min(-1), V(grafo.V()){}
 
    bool esPosible(Grafo const& grafo){
-      int aux, i = 1;
+      int i = 1;
+      pair<int, int> sol_parcial;
       while (i < grafo.V() && !pelean){
          if (!visitados[i]) {
-            aux = bfs(grafo, i);
+            sol_parcial = bfs(grafo, i);
             if (!pelean) {
-                  if (min == -1) min = aux;
-                  else min += aux;
-                  soluciones.push(aux);
+                  if (min == -1) min = sol_parcial.second;
+                  else min += sol_parcial.second;
+                  soluciones.push(sol_parcial);
                }
          }
          i++;
@@ -34,10 +37,12 @@ public:
       return min != -1;
    }
 
-   int const minimo() { 
+   int calcula_minimo() { 
+      pair<int, int> aux;
       min = 0;
       while (!soluciones.empty()) {
-         min += soluciones.front() < V - soluciones.front()? soluciones.front(): V - soluciones.front();
+         aux = soluciones.front();
+         min += minimo(aux.second, aux.first - aux.second);
          soluciones.pop();
       }
       return min;
@@ -46,40 +51,48 @@ public:
 private: 
    int min;
    int V;
-   vector<int> distancias; 
-   vector<bool> colocados;
    vector<bool> visitados;
-   queue<int> soluciones;
+   vector<Color> guardias;
+   queue<pair<int, int>> soluciones;
    bool pelean;
 
-   int bfs(Grafo const& grafo, int ini){
-      int guardias = 0;
-      if (!grafo.ady(ini).empty()) guardias++;
-      colocados[ini] = true;
-      distancias[ini] = 0;
+   int minimo(int a, int b){
+      if (a <= b) return a;
+      return b;
+   }
+
+   pair<int, int> bfs(Grafo const& grafo, int ini){
+      int num_guardias = 0;
+      int componentes = 0;
+      if (!grafo.ady(ini).empty()) {
+         num_guardias++;
+         guardias[ini] = negro;
+      }
+      else guardias[ini] = blanco;
       queue<int> cola;
       cola.push(ini);
       while(!cola.empty()){
          if(pelean)
-            return -1;
+            return {-1, -1};
          int v = cola.front();
          cola.pop();
          for(int w: grafo.ady(v)){
-            if(distancias[w] == -1){
-               distancias[w] = distancias[v] + 1;
-               if(distancias[w] % 2 == 0) {
-                  colocados[w] = true;
-                  guardias++;
+            if(guardias[w] == sin_color){
+               if(guardias[v] == blanco) {
+                  guardias[w] = negro;
+                  num_guardias++;
                }
+               else guardias[w] = blanco;
             }
-            else if ((colocados[w] && colocados[v])|| (!colocados[w] && !colocados[v])){
+            else if (guardias[v] == guardias[w]){
                pelean = true;
             }
             if(!visitados[w]) cola.push(w);
          }
          visitados[v] = true;
+         componentes++;
       }
-      return guardias;
+      return {componentes, num_guardias};
    }
 };
 
@@ -96,7 +109,7 @@ bool resuelveCaso() {
    Guardias guardias(grafo);
    
    // escribir sol
-   if(guardias.esPosible(grafo)) cout << guardias.minimo() << "\n";
+   if(guardias.esPosible(grafo)) cout << guardias.calcula_minimo() << "\n";
    else cout << "IMPOSIBLE\n"; 
    
    return true;

@@ -1,3 +1,6 @@
+#include "DigrafoValorado.h"
+#include "IndexPQ.h"
+
 template <typename Valor>
 class Dijkstra {
 public:
