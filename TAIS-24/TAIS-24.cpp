@@ -17,8 +17,8 @@ using namespace std;
 class Cole{
 public:
     Cole(DigrafoValorado<int> const& grafo){
-        Dijkstra dijkstra(grafo, 0);
-        sol = dijkstra.numCaminos();
+        Dijkstra<int> dijkstra(grafo, 0);
+        sol = dijkstra.numCaminos(grafo.V() - 1);
     }
 
     int solucion(){ return sol; }

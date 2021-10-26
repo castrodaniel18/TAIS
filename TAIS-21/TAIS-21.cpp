@@ -24,7 +24,7 @@ public:
 
 private:
     vector<bool> visitados;
-    bool hayCamino = false;
+    bool hayCamino;
 
     void dfs(GrafoValorado<int>const &grafo, int ini, int fin, int ancho){
         visitados[ini] = true;
