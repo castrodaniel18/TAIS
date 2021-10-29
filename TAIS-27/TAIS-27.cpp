@@ -8,43 +8,44 @@
 #include <fstream>
 #include <queue>
 
-#include "DigrafoValorado.h"  // propios o los de las estructuras de datos de clase
-#include "Dijkstra.h"
-
 using namespace std;
+
+// función que resuelve el problema
+// comentario sobre el coste, O(f(N)), donde N es ...
+int resolver(queue<int> &manguera, int L) {
+    int parche, num_parches = 0;
+    if(!manguera.empty()){
+        parche = manguera.front(); manguera.pop();
+        num_parches++;
+    }
+    while(!manguera.empty()){
+        if(manguera.front() > parche + L){
+            parche = manguera.front();
+            num_parches++;
+        }
+        manguera.pop();
+    }
+    return num_parches;
+}
 
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-   int N, C, K, v, w, k;
+   int N, L, pos;
    // leer los datos de la entrada
-   cin >> N >> C;
-
+   cin >> N >> L;
    if (!std::cin)  // fin de la entrada
       return false;
-
-   DigrafoValorado<int> grafo(N);
-   for(int i = 0; i < C; i++){
-      cin >> v >> w >> k;
-      v--;
-      w--;
-      grafo.ponArista({v, w, k});
-      grafo.ponArista({w, v, k});
+   queue<int> manguera;
+   for(int i = 0; i < N; i++){
+       cin >> pos;
+       manguera.push(pos);
    }
-   cin >> K;
-   for(int i = 0; i < K; i++){
-      cin >> v >> w;
-      Dijkstra<int> caminos(grafo, v - 1, w - 1);
-      if(caminos.hayCamino(w - 1)){
-         cout << caminos.distancia(w - 1) << " ";
-         if(caminos.min_aristas_bfs() == caminos.min_aristas_dijkstra()) cout << "SI\n";
-         else cout << "NO\n";
-      }
-      else cout << "SIN CAMINO\n";
-   }
-
-   cout << "---\n";
-
+   int sol = resolver(manguera, L);
+   
+   // escribir sol
+   cout << sol << "\n";
+   
    return true;
 }
 

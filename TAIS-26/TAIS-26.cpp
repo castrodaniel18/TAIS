@@ -6,44 +6,49 @@
 
 #include <iostream>
 #include <fstream>
-#include <queue>
 
 #include "DigrafoValorado.h"  // propios o los de las estructuras de datos de clase
 #include "Dijkstra.h"
 
 using namespace std;
 
+// función que resuelve el problema
+// comentario sobre el coste, O(f(N)), donde N es ...
+class Ratones{
+public:
+   Ratones(DigrafoValorado<int>& grafo, int S, int T): ratones(0){
+      Dijkstra<int> dijkstra(grafo, S);
+      for(int v = 0; v < grafo.V(); v++){
+         if( v != S && dijkstra.distancia(v) <= T) ratones++;
+      }
+   }
+
+   int salida(){ return ratones; }
+
+private:
+   int ratones;
+};
+
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-   int N, C, K, v, w, k;
+   int N, S, T, P, A, B, K;
    // leer los datos de la entrada
-   cin >> N >> C;
-
+   cin >> N >> S >> T >> P;
    if (!std::cin)  // fin de la entrada
       return false;
-
+   
    DigrafoValorado<int> grafo(N);
-   for(int i = 0; i < C; i++){
-      cin >> v >> w >> k;
-      v--;
-      w--;
-      grafo.ponArista({v, w, k});
-      grafo.ponArista({w, v, k});
+   for(int i = 0; i < P; i++){
+      cin >> A >> B >> K;
+      A--; B--;
+      grafo.ponArista({B, A, K});
    }
-   cin >> K;
-   for(int i = 0; i < K; i++){
-      cin >> v >> w;
-      Dijkstra<int> caminos(grafo, v - 1, w - 1);
-      if(caminos.hayCamino(w - 1)){
-         cout << caminos.distancia(w - 1) << " ";
-         if(caminos.min_aristas_bfs() == caminos.min_aristas_dijkstra()) cout << "SI\n";
-         else cout << "NO\n";
-      }
-      else cout << "SIN CAMINO\n";
-   }
+   
+   Ratones ratones(grafo, S - 1, T);
 
-   cout << "---\n";
+   // escribir sol
+   cout << ratones.salida() << "\n";
 
    return true;
 }

@@ -1,17 +1,17 @@
 #include <limits>
+#include <queue>
 
 #include "DigrafoValorado.h"
 #include "IndexPQ.h"
 
-using namespace std;
-
 template <typename Valor>
 class Dijkstra {
 public:
-    Dijkstra(DigrafoValorado<Valor> const& g, int orig) : origen(orig), dist(g.V(), INF), pq(g.V()), minimo_aristas(g.V(), pair(INF, INF)) {
-        dist[origen] = 0;
+    Dijkstra(DigrafoValorado<Valor> const& g, int orig, int dest) : origen(orig), destino(dest), dist(g.V(), {INF, INF}), pq(g.V()) {
+        dist[origen].first = 0;
+        dist[origen].second = 0;
         pq.push(origen, 0);
-        minimo_aristas[origen] = {0, 0};
+        dist_bfs = bfs(g);
         while (!pq.empty()) {
             int v = pq.top().elem; pq.pop();
             for (auto a : g.ady(v))
@@ -19,35 +19,52 @@ public:
         }
     }
 
-    bool hayCamino(int v) const { return dist[v] != INF; }
+    bool hayCamino(int v) const { return dist[v].first != INF; }
 
-    Valor distancia(int v) const { return dist[v]; }
+    Valor distancia(int v) const { return dist[v].first; }
 
-    bool camino_menor_aristas(int v){
-        if(minimo_aristas[v].second == dist[v]) return true;
-        return false;
-    }
+    int min_aristas_bfs() { return dist_bfs; }
+
+    int min_aristas_dijkstra() { return dist[destino].second; }
 
 private:
     const Valor INF = std::numeric_limits<Valor>::max();
     int origen;
-    std::vector<Valor> dist;
+    int destino;
+    std::vector<std::pair<Valor, Valor>> dist;
     IndexPQ<Valor> pq;
-    vector<pair<Valor, Valor>> minimo_aristas;
+    int dist_bfs;
 
     void relajar(AristaDirigida<Valor> a) {
         int v = a.desde(), w = a.hasta();
-        if (dist[w] > dist[v] + a.valor()) {
-            dist[w] = dist[v] + a.valor();
-            pq.update(w, dist[w]);
+        if (dist[w].first > dist[v].first + a.valor()) {
+            dist[w].first = dist[v].first + a.valor();
+            pq.update(w, dist[w].first);
+            dist[w].second = dist[v].second + 1;
         }
+        else if (dist[w].first == dist[v].first + a.valor())
+            if (dist[w].second > dist[v].second + 1)
+                dist[w].second = dist[v].second + 1;
+    }
 
-        if(minimo_aristas[v].first + 1 < minimo_aristas[w].first){
-            minimo_aristas[w] = {minimo_aristas[v].first + 1, dist[v] + a.valor()};
+    int bfs(DigrafoValorado<Valor> const& g){
+        std::vector<int> visit(g.V());
+        std::vector<int> dist_bfs(g.V());
+        std::queue<int> cola;
+        cola.push(origen);
+        dist_bfs[origen] = 0;
+        visit[origen] = true;
+        while(!cola.empty()){
+            int v = cola.front(); cola.pop();
+            for(auto a: g.ady(v)){
+                int w = a.hasta();
+                if(!visit[w]){
+                    visit[w] = true;
+                    dist_bfs[w] = dist_bfs[v] + 1;
+                    cola.push(w);
+                }
+            }
         }
-        else if (minimo_aristas[v].first + 1 == minimo_aristas[w].first){
-             if (minimo_aristas[w].second > minimo_aristas[v].second + a.valor()) 
-                minimo_aristas[w] = {minimo_aristas[v].first + 1, dist[v] + a.valor()};
-        }
+        return dist_bfs[destino];
     }
 };

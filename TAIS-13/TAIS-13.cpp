@@ -20,32 +20,21 @@ class Guardias{
 public:
    Guardias(Grafo const& grafo): guardias(grafo.V(), sin_color), visitados(grafo.V(), false), pelean(false), min(-1), V(grafo.V()){}
 
-   bool esPosible(Grafo const& grafo){
+   int colocaGuardias(Grafo const& grafo){
       int i = 1;
-      pair<int, int> sol_parcial;
+      int sol_parcial, sol = 0;
       while (i < grafo.V() && !pelean){
          if (!visitados[i]) {
-            sol_parcial = bfs(grafo, i);
             if (!pelean) {
-                  if (min == -1) min = sol_parcial.second;
-                  else min += sol_parcial.second;
-                  soluciones.push(sol_parcial);
+                  sol_parcial = bfs(grafo, i);
+                  if(sol_parcial != -1)
+                     sol += sol_parcial;
+                  else sol = -1;
                }
          }
          i++;
       }
-      return min != -1;
-   }
-
-   int calcula_minimo() { 
-      pair<int, int> aux;
-      min = 0;
-      while (!soluciones.empty()) {
-         aux = soluciones.front();
-         min += minimo(aux.second, aux.first - aux.second);
-         soluciones.pop();
-      }
-      return min;
+      return sol;
    }
 
 private: 
@@ -61,7 +50,7 @@ private:
       return b;
    }
 
-   pair<int, int> bfs(Grafo const& grafo, int ini){
+   int bfs(Grafo const& grafo, int ini){
       int num_guardias = 0;
       int componentes = 0;
       if (!grafo.ady(ini).empty()) {
@@ -73,7 +62,7 @@ private:
       cola.push(ini);
       while(!cola.empty()){
          if(pelean)
-            return {-1, -1};
+            return -1;
          int v = cola.front();
          cola.pop();
          for(int w: grafo.ady(v)){
@@ -92,7 +81,7 @@ private:
          visitados[v] = true;
          componentes++;
       }
-      return {componentes, num_guardias};
+      return minimo(num_guardias, componentes - num_guardias);
    }
 };
 
@@ -109,7 +98,8 @@ bool resuelveCaso() {
    Guardias guardias(grafo);
    
    // escribir sol
-   if(guardias.esPosible(grafo)) cout << guardias.calcula_minimo() << "\n";
+   int sol = guardias.colocaGuardias(grafo);
+   if(sol != -1) cout << sol << "\n";
    else cout << "IMPOSIBLE\n"; 
    
    return true;
