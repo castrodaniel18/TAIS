@@ -24,7 +24,7 @@ struct comp{
 
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
-int resolver(priority_queue<proyecto, vector<proyecto>, comp>& proyectos, vector<int> ocupado) {
+int resolver(priority_queue<proyecto, vector<proyecto>, comp>& proyectos, vector<int>& ocupado) {
     proyecto aux;
     bool necesario;
     int num_proyectos = proyectos.size();
