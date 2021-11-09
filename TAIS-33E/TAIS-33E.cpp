@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -27,7 +28,7 @@ bool resuelveCaso() {
     string peli, hora, min, duracion;
     // leer los datos de la entrada
     cin >> N;
-    if (!std::cin)  // fin de la entrada
+    if (N == 0)  // fin de la entrada
         return false;
 
     vector<pelicula> peliculas;
