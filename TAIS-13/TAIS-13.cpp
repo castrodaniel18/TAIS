@@ -18,87 +18,74 @@ enum Color{blanco, negro, sin_color};
 // comentario sobre el coste, O(f(N)), donde N es ...
 class Guardias{
 public:
-   Guardias(Grafo const& grafo): guardias(grafo.V(), sin_color), visitados(grafo.V(), false), pelean(false), min(-1), V(grafo.V()){}
+    Guardias(Grafo const& grafo): visitados(grafo.V(), sin_color), sol(0), imposible(false){
+        int i = 0;
+        while (i < grafo.V() && !imposible){
+            if(visitados[i] == sin_color){
+               visitados[i] = blanco;
+               auto aux = dfs(grafo, i);
+               sol += minimo(aux.first, aux.second - aux.first);
+            }
+            i++;
+        }
+        if(imposible) sol = -1;
+    }
 
-   int colocaGuardias(Grafo const& grafo){
-      int i = 1;
-      int sol_parcial, sol = 0;
-      while (i < grafo.V() && !pelean){
-         if (!visitados[i]) {
-            if (!pelean) {
-                  sol_parcial = bfs(grafo, i);
-                  if(sol_parcial != -1)
-                     sol += sol_parcial;
-                  else sol = -1;
-               }
-         }
-         i++;
-      }
-      return sol;
-   }
+    int solucion(){ return sol; }
 
 private: 
-   int min;
-   int V;
-   vector<bool> visitados;
-   vector<Color> guardias;
-   queue<pair<int, int>> soluciones;
-   bool pelean;
+
+   vector<Color> visitados;
+   int sol;
+   bool imposible;
 
    int minimo(int a, int b){
-      if (a <= b) return a;
+      if(a <= b) return a;
       return b;
    }
 
-   int bfs(Grafo const& grafo, int ini){
-      int num_guardias = 0;
-      int componentes = 0;
-      if (!grafo.ady(ini).empty()) {
-         num_guardias++;
-         guardias[ini] = negro;
-      }
-      else guardias[ini] = blanco;
-      queue<int> cola;
-      cola.push(ini);
-      while(!cola.empty()){
-         if(pelean)
-            return -1;
-         int v = cola.front();
-         cola.pop();
-         for(int w: grafo.ady(v)){
-            if(guardias[w] == sin_color){
-               if(guardias[v] == blanco) {
-                  guardias[w] = negro;
-                  num_guardias++;
-               }
-               else guardias[w] = blanco;
+  pair<int, int> dfs(Grafo const& grafo, int v){
+      int num_guardias = 0, cruces = 1;
+      Adys ady = grafo.ady(v);
+      for(int i = 0; i < ady.size() && !imposible; i++){
+         int w = ady[i];
+         if(visitados[w] == sin_color){
+            if(visitados[v] == negro) {
+               visitados[w] = blanco;
             }
-            else if (guardias[v] == guardias[w]){
-               pelean = true;
-            }
-            if(!visitados[w]) cola.push(w);
+            else{
+               visitados[w] = negro;
+               num_guardias++;
+            } 
+            auto aux = dfs(grafo, w);
+            num_guardias += aux.first;
+            cruces += aux.second;
          }
-         visitados[v] = true;
-         componentes++;
+         else if(visitados[v] == visitados[w]) imposible = true;
       }
-      return minimo(num_guardias, componentes - num_guardias);
+      return {num_guardias, cruces};
    }
 };
 
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-   
+   int N, A, v, w;
    // leer los datos de la entrada
-   Grafo grafo(cin);
-
+   cin >> N >> A;
    if (!std::cin)  // fin de la entrada
       return false;
-   
+
+   Grafo grafo(N);
+   for(int i = 0; i < A; i++){
+      cin >> v >> w;
+      grafo.ponArista(v - 1, w - 1);
+   }
+
    Guardias guardias(grafo);
    
    // escribir sol
-   int sol = guardias.colocaGuardias(grafo);
+   int sol = guardias.solucion();
    if(sol != -1) cout << sol << "\n";
    else cout << "IMPOSIBLE\n"; 
    

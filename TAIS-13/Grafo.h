@@ -37,7 +37,6 @@ public:
     */
    Grafo(std::istream & flujo, int primer = 0) : _A(0) {
       flujo >> _V;
-      _V++;
       if (!flujo) return;
       _ady.resize(_V);
       int E, v, w;
