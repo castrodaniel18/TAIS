@@ -6,8 +6,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <queue>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -16,62 +16,53 @@ struct proyecto{
     int fin;
 };
 
-struct comp{
-    bool operator()(proyecto const &a, proyecto const &b){
-        return a.fin - a.ini > b.fin - b.ini;
-    }
-};
+bool operator<(proyecto const &a, proyecto const &b){
+    return a.ini < b.ini;
+}
 
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
-int resolver(priority_queue<proyecto, vector<proyecto>, comp>& proyectos, vector<int>& ocupado) {
-    proyecto aux;
-    bool necesario;
-    int num_proyectos = proyectos.size();
-    while(!proyectos.empty()){
-        necesario = false;
-        aux = proyectos.top();
-
-        for(int i = aux.ini; i < aux.fin && !necesario; i++)
-            if(ocupado[i] == 1) necesario = true;
-
-        proyectos.pop();
-
-        if(!necesario) {
-            num_proyectos--;
-            for(int i = aux.ini; i < aux.fin; i++) ocupado[i]--;
+int resolver(vector<proyecto>const & proyectos, int C, int F) {
+    int actual, fin_proyecto = C, sol = 0, i = 0;
+    bool imposible = false;
+    while(fin_proyecto < F && !imposible){
+        actual = fin_proyecto;
+        while(i < proyectos.size() && proyectos[i].ini <= fin_proyecto){
+            if(proyectos[i].fin > actual){
+                actual = proyectos[i].fin;
+            }
+            i++;
         }
+        if(actual > fin_proyecto){
+            sol++;
+            fin_proyecto = actual;
+        }
+        else imposible = true;
     }
-    return num_proyectos;
+
+    if(imposible) return -1;
+    return sol;
 }
 
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-    int C, F, N, c, f;
-    bool hay_solucion = true;
+    int C, F, N, c, f, sol;
     // leer los datos de la entrada
     cin >> C >> F >> N;
     if (C== 0 && F == 0 && N == 0)
         return false;
 
-    F--;
-    priority_queue<proyecto, vector<proyecto>, comp> proyectos;
-    vector<int> ocupado(F, 0);
+    vector<proyecto> proyectos;
     for(int i = 0; i < N; i++){
         cin >> c >> f;
-        if(c < C) c = C;
-        if(f > F) f = F;
-        proyectos.push({c, f});
-        for(int j = c; j < f; j++) ocupado[j]++;
+        proyectos.push_back({c, f});
     }
-
-    for(int i = C; i <= F; i++)
-        if(ocupado[i] == 0) hay_solucion = false;
+    sort(proyectos.begin(), proyectos.end());
+    sol =  resolver(proyectos, C, F);
 
     // escribir sol
-    if(hay_solucion)
-        cout << resolver(proyectos, ocupado) << "\n";
+    if(sol != -1) cout << sol << "\n";
     else cout << "Imposible\n";
 
     return true;
