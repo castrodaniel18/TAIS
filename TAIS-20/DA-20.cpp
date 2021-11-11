@@ -20,7 +20,7 @@ public:
             for(int j = 0; j < C; j++){
                 if(mapa[i][j] == '#'){
                     une_manchas(mapa, i, j);
-                    if (conjunto.cardinal(i * F + j) > max) max = conjunto.cardinal(i * F + j);
+                    if (conjunto.cardinal(i * C + j) > max) max = conjunto.cardinal(i * C + j);
                 }
             }
         }
@@ -29,15 +29,15 @@ public:
     void une_manchas(vector<string> const &mapa, int i, int j){
         for(int k = i - 1; k < i + 2; k++){
             for(int l = j - 1; l < j + 2; l++){
-                if(dentro(k, l) && mapa[k][l] == '#' && !conjunto.unidos(k * F + l, i * F + j))
-                    conjunto.unir(k * F + l, i * F + j);
+                if(dentro(k, l) && mapa[k][l] == '#' && !conjunto.unidos(k * C + l, i * C + j))
+                    conjunto.unir(k * C + l, i * C + j);
             }
         }
     }
 
     void anadir_mancha(vector<string> const &mapa, int i, int j){
         une_manchas(mapa, i, j);
-        if (conjunto.cardinal(i * F + j) > max) max = conjunto.cardinal(i * F + j);
+        if (conjunto.cardinal(i * C + j) > max) max = conjunto.cardinal(i * C + j);
     }
 
     int solucion(vector<string> const& mapa) { return max; }
