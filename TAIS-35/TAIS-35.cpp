@@ -6,59 +6,90 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "EnterosInf.h"  // propios o los de las estructuras de datos de clase
 #include "Matriz.h"
 
 using namespace std;
 
-EntInf resuelve_matematico(vector<pair<int, int>> const &c, int L){
+struct cordel{
+    int longitud;
+    int precio;
+};
+
+struct ordena_longitud{
+    bool operator()(cordel const &a, cordel const& b){
+        return a.longitud < b.longitud;
+    }
+};
+
+struct ordena_precio{
+    bool operator()(cordel const &a, cordel const& b){
+        return a.precio < b.precio;
+    }
+};
+
+bool es_posible(vector<cordel> const &c, int L){
+    vector<bool> posible(L + 1, false);
+    posible[0] = true;
+    for(int i = 1; i < c.size(); i++){
+        for(int j = L; j >= c[i].longitud; j--){
+            posible[j] = posible[j - c[i].longitud] || posible[j];
+        }
+    }
+    return posible[L];
+}
+
+EntInf resuelve_matematico(vector<cordel> const &c, int L){
     int n = c.size();
     Matriz<EntInf> cuerdas(n+1, L+1, Infinito);
     cuerdas[0][0] = 0;
     for (int i = 1; i <= n; ++i) {
         cuerdas[i][0] = 0;
         for (int j = 0; j <= L; ++j){
-            if (c[i-1].first > j)
+            if (c[i-1].longitud > j)
                 cuerdas[i][j] = cuerdas[i-1][j];
-            else if(j == c[i-1].first) cuerdas[i][j] = 1;
             else {
-                if(cuerdas[i - 1][j] == Infinito)
-                    cuerdas[i][j] = cuerdas[i][j - c[i - 1].first];
-                else 
-                    cuerdas[i][j] = cuerdas[i - 1][j] + cuerdas[i][j - c[i - 1].first];
+                if(j - c[i - 1].longitud > -1){
+                    cuerdas[i][j] = cuerdas[i - 1][j - c[i - 1].longitud];
+                }
+                if(cuerdas[i - 1][j] != Infinito){
+                    cuerdas[i][j] = cuerdas[i][j] + cuerdas[i - 1][j];
+                }
             }
+            if (c[i-1].longitud == j) cuerdas[i][j] = cuerdas[i][j] + 1;
         }
     }
     return cuerdas[n][L];
 }
 
-EntInf resuelve_ingeniero(vector<pair<int, int>> const &c, int L){
+EntInf resuelve_ingeniero(vector<cordel> const &c, int L){
     int n = c.size();
     Matriz<EntInf> cuerdas(n+1, L+1, Infinito);
     cuerdas[0][0] = 0;
     for (int i = 1; i <= n; ++i) {
         cuerdas[i][0] = 0;
         for (int j = 1; j <= L; ++j)
-            if (c[i-1].first > j)
+            if (c[i-1].longitud > j)
                 cuerdas[i][j] = cuerdas[i-1][j];
             else
-                cuerdas[i][j] = min(cuerdas[i-1][j], cuerdas[i][j - c[i-1].first] + 1);
+                cuerdas[i][j] = min(cuerdas[i-1][j], cuerdas[i][j - c[i-1].longitud] + 1);
     }
     return cuerdas[n][L];
 }
 
-EntInf resuelve_economista(vector<pair<int, int>> const &c, int L){
+EntInf resuelve_economista(vector<cordel> const &c, int L){
     int n = c.size();
     Matriz<EntInf> cuerdas(n+1, L+1, Infinito);
     cuerdas[0][0] = 0;
     for (int i = 1; i <= n; ++i) {
         cuerdas[i][0] = 0;
         for (int j = 1; j <= L; ++j)
-            if (c[i-1].second > j)
+            if (c[i-1].longitud > j)
                 cuerdas[i][j] = cuerdas[i-1][j];
             else
-                cuerdas[i][j] = min(cuerdas[i-1][j], cuerdas[i][j - c[i-1].second] + 1);
+                cuerdas[i][j] = min(cuerdas[i-1][j], cuerdas[i - 1][j - c[i-1].longitud] + c[i-1].precio);
     }
     return cuerdas[n][L];
 }
@@ -72,20 +103,29 @@ bool resuelveCaso() {
     if (!std::cin)  // fin de la entrada
         return false;
 
-    vector<pair<int, int>> cuerdas;
+    vector<cordel> cuerdas;
     for(int i = 0; i < N; i++){
         cin >> l >> c;
         cuerdas.push_back({l, c});
     }
-    sort(cuerdas.begin(), cuerdas.end());
 
-    EntInf sol = resuelve_matematico(cuerdas, L);
-    cout << sol << " ";
-    sol = resuelve_ingeniero(cuerdas, L);
-    cout << sol << " ";
-    sol = resuelve_economista(cuerdas, L);
-    cout << sol << " ";
+    if(es_posible(cuerdas, L)){
+        cout << "SI ";
 
+        sort(cuerdas.begin(), cuerdas.end(), ordena_longitud());
+
+        EntInf sol = resuelve_matematico(cuerdas, L);
+        cout << sol << " ";
+
+        sol = resuelve_ingeniero(cuerdas, L);
+        cout << sol << " ";
+
+        sort(cuerdas.begin(), cuerdas.end(), ordena_precio());
+        sol = resuelve_economista(cuerdas, L);
+        cout << sol << "\n";
+
+    }
+    else cout << "NO\n";
     return true;
 }
 
