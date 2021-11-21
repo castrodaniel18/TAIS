@@ -13,20 +13,9 @@
 
 using namespace std;
 
-bool es_posible(vector<int>const &diana, int V){
-    vector<bool> posible(V + 1, false);
-    posible[0] = true;
-    for(int i = 0; i < diana.size(); i++){
-        for(int j = V; j >= diana[i]; j--){
-            posible[j] = posible[j - diana[i]] || posible[j];
-        }
-    }
-    return posible[V];
-}
-
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
-pair<EntInf, vector<EntInf>> resolver(vector<int>const &diana, int V) {
+vector<EntInf> resolver(vector<int>const &diana, int V) {
     int n = diana.size();
     Matriz<EntInf> cuerdas(n+1, V+1, Infinito);
     cuerdas[0][0] = 0;
@@ -38,20 +27,18 @@ pair<EntInf, vector<EntInf>> resolver(vector<int>const &diana, int V) {
             else
                 cuerdas[i][j] = min(cuerdas[i-1][j], cuerdas[i][j - diana[i-1]] + 1);
     }
-
-    int puntos = V, i = n, j = V;
     vector<EntInf> sol;
-    while(puntos > 0){
-        if(cuerdas[i - 1][j - diana[i - 1]] != Infinito){
-            sol.push_back(diana[i - 1]);
-            puntos -= diana[i - 1];
-            j -= diana[i - 1];
-        }
-        else{
-            i--;
+    if (cuerdas[n][V] != Infinito) {
+        int i = n, j = V;
+        while (j > 0) { // no se ha pagado todo
+            if (diana[i-1] <= j && (cuerdas[i][j - diana[i-1]] + 1 < cuerdas[i-1][j] || cuerdas[i][j - diana[i-1]] + 1 == cuerdas[i-1][j])) {
+                // tomamos una moneda de tipo i
+                sol.push_back(diana[i-1]); j = j - diana[i-1];
+            } else // no tomamos más monedas de tipo i
+                --i;
         }
     }
-    return {cuerdas[n][V], sol};
+    return sol;
 }
 
 // resuelve un caso de prueba, leyendo de la entrada la
@@ -69,12 +56,12 @@ bool resuelveCaso() {
         diana.push_back(p);
     }
 
+    auto sol = resolver(diana, V);
     // escribir sol
-    if(es_posible(diana, V)){
-        auto sol = resolver(diana, V);
-        cout << sol.first << ": ";
-        for(int i = 0; i < sol.second.size(); i++){
-            cout << sol.second[i] << " ";
+    if(!sol.empty()){
+        cout << sol.size() << ": ";
+        for(int i = 0; i < sol.size(); i++){
+            cout << sol[i] << " ";
         }
         cout << "\n";
     }
