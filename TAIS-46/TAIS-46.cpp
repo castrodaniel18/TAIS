@@ -36,6 +36,7 @@ int devoradora(vector<int>const &cubos, int ini, int fin) {
 
 int vacas_pensantes(vector<int> const &cubos){
    Matriz<int> soluciones(cubos.size(), cubos.size(), 0);
+   int fin = cubos.size() - 1;
    //solo si es impar creo, sino se quedan ceros 
    if(cubos.size() % 2 != 0)
       for(int i = 0; i < cubos.size(); i++){
@@ -44,17 +45,20 @@ int vacas_pensantes(vector<int> const &cubos){
 
    for(int i = 1; i < cubos.size(); i++){
       for(int j = 0; j < cubos.size(); j++){
-         if (j % 2 == 0){
-            if (cubos[i] >= cubos[i + j])
+         if (j + 1 > fin) soluciones[i][j] = 0;
+         else if (i % 2 == cubos.size() % 2){
+            if (cubos[j] >= cubos[i + j])
                soluciones[i][j] = soluciones[i - 1][j + 1];
             else 
                soluciones[i][j] = soluciones[i - 1][j];
          }
-         else 
-            soluciones[i][j] = max(soluciones[i - 1][j] + cubos[i], soluciones[i - 1][j + 1] + cubos[j]);
+         else {
+               soluciones[i][j] = max(soluciones[i - 1][j] + cubos[i + j], soluciones[i - 1][j + 1] + cubos[j]);
+         }
       }
+      fin--;
    }
-   return[0][0];
+   return soluciones[cubos.size() - 1][0];
 }
 
 // resuelve un caso de prueba, leyendo de la entrada la
@@ -71,7 +75,7 @@ bool resuelveCaso() {
       cin >> cubo;
       cubos.push_back(cubo);
    }
-   int sol = devoradora(cubos, 0, N - 1);
+   int sol = vacas_pensantes(cubos);
    
    // escribir sol
    cout << sol << "\n";
