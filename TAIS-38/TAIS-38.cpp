@@ -14,6 +14,8 @@
 
 using namespace std;
 
+const int INF = 1000000000;
+
 struct bombilla {
    int potencia;
    int coste;
@@ -26,23 +28,22 @@ bool operator<(bombilla const& a, bombilla const &b){
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
 pair<int, int> resolver_bombillas(vector<bombilla>const &bombillas, int PMax, int PMin) {
-   Matriz<int> sol (bombillas.size() + 1, PMax + 1, INT_MAX);
-   sol[0][0] = 0;
+   vector<int> luces(PMax + 1, INF);
+   luces[0] = 0;
+
    for(int i = 1; i <= bombillas.size(); i++){
-      sol[i][0] = 0;
-      for(int j = 1; j <= PMax; j++){
-         if(sol.posCorrecta(i - 1, j - bombillas[i - 1].potencia))
-            sol[i][j] = min(sol[i - 1][j], sol[i - 1][j - bombillas[i - 1].potencia] + bombillas[i - 1].coste);
-         else sol[i][j] = sol[i - 1][j];
+      for(int j = bombillas[i - 1].potencia; j <= PMax; j++){
+         luces[j] = min(luces[j], luces[j - bombillas[i - 1].potencia] + bombillas[i - 1].coste);
       }
    }
-   int min = sol[bombillas.size()][PMin], pos = PMin;
-   for(int i = PMin + 1; i <= PMax; i++){
-      if(sol[bombillas.size()][i] < min){
-         min = sol[bombillas.size()][i];
-         pos = i;
+   int sol = INF, ind = -1;
+   for(int i = PMin; i < PMax; i++){
+      if(sol > luces[i]){
+         sol = luces[i];
+         ind = i;
       }
    }
+   return {sol, ind};
 }
 
 // resuelve un caso de prueba, leyendo de la entrada la
@@ -69,8 +70,9 @@ bool resuelveCaso() {
    pair<int, int> sol = resolver_bombillas(bombillas, PMax, PMin);
    
    // escribir sol
-   cout << sol.first << " " << sol.second << "\n";
-   
+   if(sol.first != INF) cout << sol.first << " " << sol.second << "\n";
+   else cout << "IMPOSIBLE\n";
+
    return true;
 }
 
