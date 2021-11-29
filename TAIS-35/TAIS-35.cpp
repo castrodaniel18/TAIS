@@ -14,8 +14,8 @@
 using namespace std;
 
 struct cordel{
-    int longitud;
-    int precio;
+    long long int longitud;
+    long long int precio;
 };
 
 struct ordena_longitud{
@@ -30,24 +30,24 @@ struct ordena_precio{
     }
 };
 
-bool es_posible(vector<cordel> const &c, int L){
+bool es_posible(vector<cordel> const &c, long long int L){
     vector<bool> posible(L + 1, false);
     posible[0] = true;
-    for(int i = 1; i < c.size(); i++){
-        for(int j = L; j >= c[i].longitud; j--){
+    for(long long int i = 1; i < c.size(); i++){
+        for(long long int j = L; j >= c[i].longitud; j--){
             posible[j] = posible[j - c[i].longitud] || posible[j];
         }
     }
     return posible[L];
 }
 
-EntInf resuelve_matematico(vector<cordel> const &c, int L){
-    int n = c.size();
+EntInf resuelve_matematico(vector<cordel> const &c, long long int L){
+    long long int n = c.size();
     Matriz<EntInf> cuerdas(n+1, L+1, Infinito);
     cuerdas[0][0] = 0;
-    for (int i = 1; i <= n; ++i) {
+    for (long long int i = 1; i <= n; ++i) {
         cuerdas[i][0] = 0;
-        for (int j = 0; j <= L; ++j){
+        for (long long int j = 0; j <= L; ++j){
             if (c[i-1].longitud > j)
                 cuerdas[i][j] = cuerdas[i-1][j];
             else {
@@ -64,13 +64,13 @@ EntInf resuelve_matematico(vector<cordel> const &c, int L){
     return cuerdas[n][L];
 }
 
-EntInf resuelve_ingeniero(vector<cordel> const &c, int L){
-    int n = c.size();
+EntInf resuelve_ingeniero(vector<cordel> const &c, long long int L){
+    long long int n = c.size();
     Matriz<EntInf> cuerdas(n+1, L+1, Infinito);
     cuerdas[0][0] = 0;
-    for (int i = 1; i <= n; ++i) {
+    for (long long int i = 1; i <= n; ++i) {
         cuerdas[i][0] = 0;
-        for (int j = 1; j <= L; ++j)
+        for (long long int j = 1; j <= L; ++j)
             if (c[i-1].longitud > j)
                 cuerdas[i][j] = cuerdas[i-1][j];
             else
@@ -79,13 +79,13 @@ EntInf resuelve_ingeniero(vector<cordel> const &c, int L){
     return cuerdas[n][L];
 }
 
-EntInf resuelve_economista(vector<cordel> const &c, int L){
-    int n = c.size();
+EntInf resuelve_economista(vector<cordel> const &c, long long int L){
+    long long int n = c.size();
     Matriz<EntInf> cuerdas(n+1, L+1, Infinito);
     cuerdas[0][0] = 0;
-    for (int i = 1; i <= n; ++i) {
+    for (long long int i = 1; i <= n; ++i) {
         cuerdas[i][0] = 0;
-        for (int j = 1; j <= L; ++j)
+        for (long long int j = 1; j <= L; ++j)
             if (c[i-1].longitud > j)
                 cuerdas[i][j] = cuerdas[i-1][j];
             else
@@ -97,14 +97,14 @@ EntInf resuelve_economista(vector<cordel> const &c, int L){
 // resuelve un caso de prueba, leyendo de la entrada la
 // configuración, y escribiendo la respuesta
 bool resuelveCaso() {
-    int N, L, l, c;
+    long long int N, L, l, c;
     // leer los datos de la entrada
     cin >> N >> L;
     if (!std::cin)  // fin de la entrada
         return false;
 
     vector<cordel> cuerdas;
-    for(int i = 0; i < N; i++){
+    for(long long int i = 0; i < N; i++){
         cin >> l >> c;
         cuerdas.push_back({l, c});
     }

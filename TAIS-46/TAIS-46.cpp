@@ -14,26 +14,6 @@ using namespace std;
 
 // función que resuelve el problema
 // comentario sobre el coste, O(f(N)), donde N es ...
-int devoradora(vector<int>const &cubos, int ini, int fin) {
-   if(ini == fin)
-      return cubos[ini];
-   else if(ini + 1 == fin)
-      return max(cubos[ini], cubos[fin]);
-   else {
-      int aux1, aux2;
-      if(cubos[ini] > cubos[fin - 1])
-         aux1 = devoradora(cubos, ini + 1, fin - 1) + cubos[fin];
-      else 
-         aux1 = devoradora(cubos, ini, fin - 2) + cubos[fin];
-      if(cubos[ini + 1] < cubos[fin])
-         aux2 = devoradora(cubos, ini + 1, fin - 1) + cubos[ini];
-      else 
-         aux2 = devoradora(cubos, ini + 2, fin) + cubos[ini];
-
-      return max(aux1, aux2);
-   }
-}
-
 int vacas_pensantes(vector<int> const &cubos){
    Matriz<int> soluciones(cubos.size(), cubos.size(), 0);
    int fin = cubos.size() - 1;
