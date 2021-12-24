@@ -36,9 +36,9 @@ pair<int, int> resolver_bombillas(vector<bombilla>const &bombillas, int PMax, in
          luces[j] = min(luces[j], luces[j - bombillas[i - 1].potencia] + bombillas[i - 1].coste);
       }
    }
-   int sol = INF, ind = -1;
-   for(int i = PMin; i < PMax; i++){
-      if(sol > luces[i]){
+   int sol = INF, ind = 0;
+   for(int i = PMin; i <= PMax; i++){
+      if(luces[i] < sol){
          sol = luces[i];
          ind = i;
       }
