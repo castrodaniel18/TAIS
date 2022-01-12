@@ -31,8 +31,8 @@ struct ordena_id{
 };
 
 // función que resuelve el problema
-// comentario sobre el coste, O(f(N)), donde N es ...
-int resolver(PriorityQueue<bateria, ordena_capacidad>& en_funcionamiento, queue<bateria>& en_base, int Z, int T, int B) {
+
+void resolver(PriorityQueue<bateria, ordena_capacidad>& en_funcionamiento, queue<bateria>& en_base, int Z, int T, int B) {
     int tiempo = 0, pasado;
     bool abandonar = false;
     PriorityQueue<bateria, ordena_id> gastadas;
@@ -55,20 +55,17 @@ int resolver(PriorityQueue<bateria, ordena_capacidad>& en_funcionamiento, queue<
             aux = cola_aux.front(); cola_aux.pop();
             en_funcionamiento.push(aux);
         }
-        if(tiempo < T){
-            while(!gastadas.empty()){
-                aux = gastadas.top();gastadas.pop();
-                aux.capacidad -= Z;
-                aux.restante = aux.capacidad;
-                if (aux.capacidad > 0) en_funcionamiento.push(aux);
-            }
-            while(!en_base.empty() && en_funcionamiento.size() != B){
-                en_funcionamiento.push(en_base.front()); en_base.pop();
-            }
-            if(en_funcionamiento.empty()) abandonar = true;
+        while(!gastadas.empty()){
+            aux = gastadas.top();gastadas.pop();
+            aux.capacidad -= Z;
+            aux.restante = aux.capacidad;
+            if (aux.capacidad > 0) en_funcionamiento.push(aux);
         }
+        while(!en_base.empty() && en_funcionamiento.size() != B){
+            en_funcionamiento.push(en_base.front()); en_base.pop();
+        }
+        if(en_funcionamiento.empty()) abandonar = true;
     }
-    return tiempo;
 }
 
 // resuelve un caso de prueba, leyendo de la entrada la
@@ -94,12 +91,12 @@ bool resuelveCaso() {
         en_base.push({i + j, b, b});
     }
     cin >> Z >> T;
-    int sol = resolver(en_funcionamiento, en_base, Z, T, B);
+    resolver(en_funcionamiento, en_base, Z, T, B);
     if(en_funcionamiento.empty()) cout << "ABANDONEN INMEDIATAMENTE LA BASE\n";
     else if (en_funcionamiento.size() !=  B) cout << "FALLO EN EL SISTEMA\n";
     else cout << "CORRECTO\n";
     while(!en_funcionamiento.empty()){
-        cout << en_funcionamiento.top().id << " "<<en_funcionamiento.top().restante + sol << "\n";
+        cout << en_funcionamiento.top().id << " "<< en_funcionamiento.top().restante + T << "\n";
         en_funcionamiento.pop();
     }
     cout << "---\n";

@@ -1,0 +1,15 @@
+frutas -> vector que almacena las frutas del bizcocho
+CASOS BASE:
+	i = j -1
+	if frutas[i] != frutas[j] || frutas[i] == 0|| : f(i, j) = 0
+	else if frutas[i] == frutas[j]:
+		Si frutas[i] != 0: f(i, j) = 1
+
+CASOS RECURSIVOS:
+	if frutas[i] == frutas[j] && frutas[i] != 0: f(i, j) = 1 + f(i + 1, j - 1)
+	
+	else if frutas[i] == frutas[i+1] && frutas[i] == 0: f(i, j) = f(i + 2, j)
+	else if frutas[i] == frutas[j] && frutas[i] == 0: f(i, j) = f(i + 1, j - 1)
+	else if frutas[j-1] == frutas[j] && frutas[j] == 0: f(i, j) = f(i, j - 2)
+	else f(i, j) = max(f(i + 1, j - 1), max(f(i + 2, j), f(i, j - 2)))
+	
